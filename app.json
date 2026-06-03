@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Streaming Rotation",
+    "slug": "streaming-rotation",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "streaming-rotation",
+    "newArchitect": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.midrocket.streaming-rotation",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "Esta app te notifica sobre cancelaciones y reactivaciones de tus servicios de streaming."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0a0a0a"
+      },
+      "package": "com.midrocket.streamingrotation",
+      "permissions": ["RECEIVE_BOOT_COMPLETED"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-notifications"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
