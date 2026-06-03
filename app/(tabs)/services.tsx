@@ -12,6 +12,7 @@ import {
 import ServiceCard from '@/components/ServiceCard';
 import ContentPreview from '@/components/ContentPreview';
 import AlertCard from '@/components/AlertCard';
+import AdMobBanner from '@/components/AdMobBanner';
 import { useRotationStore } from '@/stores/rotationStore';
 import type { Service } from '@/types';
 
@@ -89,6 +90,7 @@ export default function ServicesScreen() {
         </View>
 
         {/* Add Button */}
+        <AdMobBanner />
         <TouchableOpacity style={styles.addBtn} onPress={() => setShowAddModal(true)}>
           <Text style={styles.addBtnText}>+ Agregar Servicio</Text>
         </TouchableOpacity>

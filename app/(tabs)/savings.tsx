@@ -6,9 +6,13 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import SavingsChart from '@/components/SavingsChart';
+import AdMobBanner from '@/components/AdMobBanner';
+import UpgradeModal from '@/components/UpgradeModal';
 import { useRotationStore } from '@/stores/rotationStore';
+import { usePremiumStore } from '@/stores/premiumStore';
 import { formatCurrency } from '@/services/calculatorService';
 
 export default function SavingsScreen() {
@@ -16,7 +20,8 @@ export default function SavingsScreen() {
   const services = useRotationStore((s) => s.services);
   const enabledServices = services.filter((s) => s.enabled);
   const calculateSavings = useRotationStore((s) => s.calculateSavings);
-
+  const isPremium = usePremiumStore((s) => s.isPremium);
+  const [upgradeVisible, setUpgradeVisible] = React.useState(false);
   const [customMonthly, setCustomMonthly] = React.useState('');
   const [showCustom, setShowCustom] = React.useState(false);
 
@@ -54,6 +59,9 @@ export default function SavingsScreen() {
             Calcula cuánto ahorras con la rotación
           </Text>
         </View>
+
+        {/* AdMob Banner */}
+        <AdMobBanner />
 
         {/* Big Savings Number */}
         <View style={styles.bigSavingsCard}>
@@ -157,6 +165,21 @@ export default function SavingsScreen() {
           </View>
         </View>
 
+        {/* Compound Interest Calculator (Premium) */}
+        {isPremium && (
+          <View style={styles.premiumFeature}>
+            <View style={styles.premiumFeatureHeader}>
+              <Text style={styles.premiumFeatureIcon}>📊</Text>
+              <Text style={styles.premiumFeatureTitle}>Calculadora de Interés Compuesto</Text>
+            </View>
+            <Text style={styles.premiumFeatureDesc}>
+              Calcula cuánto crecería tu ahorro si lo inviertes.
+              Tu ahorro anual de {formatCurrency(savings.yearlySavings)} podría generar
+              intereses adicionales cada año.
+            </Text>
+          </View>
+        )}
+
         {/* Yearly Projection */}
         <View style={styles.projection}>
           <Text style={styles.sectionTitle}>📈 Proyección de Ahorro</Text>
@@ -189,6 +212,11 @@ export default function SavingsScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+
+    <UpgradeModal
+      visible={upgradeVisible}
+      onClose={() => setUpgradeVisible(false)}
+    />
   );
 }
 
@@ -402,5 +430,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     marginTop: 4,
+  },
+  premiumFeature: {
+    backgroundColor: 'rgba(167,139,250,0.1)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#A78BFA',
+  },
+  premiumFeatureHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  premiumFeatureIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  premiumFeatureTitle: {
+    color: '#A78BFA',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  premiumFeatureDesc: {
+    color: '#CCCCCC',
+    fontSize: 13,
+    lineHeight: 18,
   },
 });
