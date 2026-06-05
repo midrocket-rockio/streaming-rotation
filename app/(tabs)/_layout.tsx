@@ -3,11 +3,13 @@ import { Tabs } from 'expo-router';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import UpgradeModal from '@/components/UpgradeModal';
 import { usePremiumStore } from '@/stores/premiumStore';
+import { useHistoryStore } from '@/stores/historyStore';
 
 export default function TabLayout() {
   const [upgradeVisible, setUpgradeVisible] = useState(false);
   const tier = usePremiumStore((s) => s.tier);
   const isPremium = usePremiumStore((s) => s.isPremium);
+  const historyCount = useHistoryStore((s) => s.entries.length);
 
   return (
     <>
@@ -72,6 +74,31 @@ export default function TabLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="history"
+          options={{
+            title: 'Historial',
+            tabBarIcon: ({ color, size }) => (
+              <View style={styles.historyTab}>
+                <Text style={{ fontSize: size }}>📊</Text>
+                {historyCount > 0 && (
+                  <View style={styles.historyBadge}>
+                    <Text style={styles.historyBadgeText}>{historyCount > 99 ? '99+' : historyCount}</Text>
+                  </View>
+                )}
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Ajustes',
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size }}>⚙️</Text>
+            ),
+          }}
+        />
       </Tabs>
 
       <UpgradeModal
@@ -101,7 +128,7 @@ const styles = StyleSheet.create({
   proBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: isPremium ? 'rgba(74,222,128,0.15)' : 'rgba(251,191,36,0.15)',
+    backgroundColor: 'rgba(251,191,36,0.15)',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 20,
@@ -115,5 +142,27 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     color: '#FBBF24',
+  },
+  historyTab: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  historyBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -8,
+    backgroundColor: '#E50914',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 3,
+  },
+  historyBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '700',
   },
 });

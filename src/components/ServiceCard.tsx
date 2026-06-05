@@ -5,8 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from 'react-native';
 import type { Service } from '@/types';
+import { useRotationStore } from '@/stores/rotationStore';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -26,6 +28,16 @@ export default function ServiceCard({
 }: ServiceCardProps) {
   const isCompact = size === 'compact';
   const cardWidth = isCompact ? width - 32 : CARD_WIDTH;
+  const logRotation = useRotationStore((s) => s.logRotation);
+
+  const handleLogRotation = () => {
+    logRotation(service.id);
+    Alert.alert(
+      '✅ Rotación Registrada',
+      `Se registró la rotación de ${service.name}.`,
+      [{ text: 'OK' }]
+    );
+  };
 
   return (
     <TouchableOpacity
@@ -67,6 +79,15 @@ export default function ServiceCard({
           <View style={[styles.activeDotInner, { backgroundColor: '#4ADE80' }]} />
         </View>
       )}
+
+      {/* Log rotation button */}
+      <TouchableOpacity
+        onPress={handleLogRotation}
+        activeOpacity={0.7}
+        style={styles.logRotationBtn}
+      >
+        <Text style={styles.logRotationBtnText}>📝 Registrar Rotación</Text>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
@@ -141,5 +162,20 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
+  },
+  logRotationBtn: {
+    backgroundColor: '#4ADE8022',
+    borderRadius: 8,
+    paddingVertical: 6,
+    marginTop: 8,
+    marginBottom: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4ADE8044',
+  },
+  logRotationBtnText: {
+    color: '#4ADE80',
+    fontSize: 11,
+    fontWeight: '700',
   },
 });

@@ -8,6 +8,7 @@ import type {
   NotificationState,
   ContentItem,
 } from '@/types';
+import { useHistoryStore } from '@/stores/historyStore';
 
 // ─── Predefined Services ──────────────────────────────────────
 
@@ -194,6 +195,9 @@ interface RotationStore {
 
   // Reset
   resetAll: () => void;
+
+  // Rotation logging
+  logRotation: (serviceId: string) => void;
 }
 
 export const useRotationStore = create<RotationStore>((set, get) => ({
@@ -406,5 +410,19 @@ export const useRotationStore = create<RotationStore>((set, get) => ({
     });
     get().buildRotationPlan();
     get().calculateSavings();
+  },
+
+  // ── Rotation Logging ──────────────────────────────────────
+  logRotation: (serviceId) => {
+    const service = get().services.find((s) => s.id === serviceId);
+    if (service) {
+      useHistoryStore.getState().addEntry({
+        serviceName: service.name,
+        serviceId: service.id,
+        monthlyPrice: service.monthlyPrice,
+        category: service.category,
+        icon: service.icon,
+      });
+    }
   },
 }));
