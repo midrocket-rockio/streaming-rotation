@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import ServiceCard from '@/components/ServiceCard';
 import RotationCalendar from '@/components/RotationCalendar';
@@ -17,6 +18,7 @@ import { useRotationStore } from '@/stores/rotationStore';
 import { usePremiumStore } from '@/stores/premiumStore';
 import { useRotation } from '@/hooks/useRotation';
 import { formatCurrency } from '@/services/calculatorService';
+import { showRewardedAd } from '@/services/adService';
 
 export default function RotationScreen() {
   const { currentRotation } = useRotation();
@@ -25,7 +27,18 @@ export default function RotationScreen() {
   const enabledServices = services.filter((s) => s.enabled);
   const [refreshing, setRefreshing] = React.useState(false);
   const [upgradeVisible, setUpgradeVisible] = React.useState(false);
+  const [showRewardedCTA, setShowRewardedCTA] = React.useState(false);
   const isPremium = usePremiumStore((s) => s.isPremium);
+
+  // Show rewarded CTA periodically for non-premium users
+  useEffect(() => {
+    if (!isPremium) {
+      const interval = setInterval(() => {
+        setShowRewardedCTA(prev => !prev);
+      }, 120000); // Toggle every 2 minutes
+      return () => clearInterval(interval);
+    }
+  }, [isPremium]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -137,6 +150,27 @@ export default function RotationScreen() {
                 Se actualiza automáticamente cada semana.
               </Text>
             </View>
+          )}
+
+          {/* Rewarded Video CTA for non-premium users */}
+          {!isPremium && showRewardedCTA && (
+            <TouchableOpacity
+              style={styles.rewardedCTA}
+              onPress={async () => {
+                const rewarded = await showRewardedAd();
+                if (rewarded) {
+                  setShowRewardedCTA(false);
+                  Alert.alert(
+                    '🎉 ¡Recompensa!',
+                    '¡Has desbloqueado el algoritmo IA por 1 hora!'
+                  );
+                }
+              }}
+            >
+              <Text style={styles.rewardedCTAText}>
+                🎬 Ver video para desbloquear IA por 1 hora
+              </Text>
+            </TouchableOpacity>
           )}
 
           {/* Rotation Calendar */}
@@ -394,5 +428,20 @@ const styles = StyleSheet.create({
     color: '#CCCCCC',
     fontSize: 13,
     lineHeight: 18,
+  },
+  rewardedCTA: {
+    backgroundColor: 'rgba(251,146,60,0.15)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#F97316',
+    alignItems: 'center',
+  },
+  rewardedCTAText: {
+    color: '#FB923C',
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
   },
 });

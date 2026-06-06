@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { SplashScreen, Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRotationStore } from '@/stores/rotationStore';
+import { initAdService } from '@/services/adService';
 
 // Prevent splash from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -14,6 +15,9 @@ export default function RootLayout() {
       store.buildRotationPlan();
     }
     store.calculateSavings();
+
+    // Initialize AdMob services
+    initAdService();
 
     // Hide splash after initialization
     SplashScreen.hideAsync();

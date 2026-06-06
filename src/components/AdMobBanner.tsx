@@ -1,91 +1,66 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { usePremiumStore } from '@/stores/premiumStore';
+import {
+  AdBanner,
+  TestAdTypes,
+} from 'react-native-admob-native-ads';
+
+// Production Ad Unit IDs — replace with your real AdMob IDs
+const AD_UNIT_ID =
+  Platform.OS === 'android'
+    ? 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY'
+    : 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY';
+
+// Test Ad Unit IDs (Google's test IDs — safe to use in development)
+const TEST_AD_UNIT_ID =
+  Platform.OS === 'android'
+    ? 'ca-app-pub-3940256099942544/6300978111'
+    : 'ca-app-pub-3940256099942544/2934735716';
+
+// Use test IDs in dev, real IDs in production
+const IS_PRODUCTION = process.env.EXPO_PUBLIC_ADMOB_ENABLED === 'true';
 
 /**
- * AdMobBanner — Banner ad component.
- * In production, replace with `react-native-google-mobile-ads`.
- * This is a placeholder that shows a mock ad banner for free users.
- * Premium users see no ads.
+ * AdMobBanner — Real AdMob banner ad component.
+ * Premium users see no ads. Free users see a banner at the bottom.
  */
 export default function AdMobBanner() {
   const adsEnabled = usePremiumStore((s) => s.adsEnabled);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  if (!adsEnabled) {
+  useEffect(() => {
+    setIsVisible(adsEnabled);
+  }, [adsEnabled]);
+
+  if (!isVisible) {
     return null;
   }
 
   return (
-    <TouchableOpacity
-      style={styles.container}
-      activeOpacity={0.7}
-      onPress={() => {
-        // In production: AdMob ad tap handler
-      }}
-    >
-      <View style={styles.adBadge}>
-        <Text style={styles.adText}>AD</Text>
-      </View>
-      <View style={styles.adContent}>
-        <Text style={styles.adTitle}>🚀 Elimina los anuncios y desbloquea IA</Text>
-        <Text style={styles.adSubtitle}>
-          Streaming Rotation Pro desde $2.99/mes
-        </Text>
-      </View>
-      <View style={styles.upgradeBtn}>
-        <Text style={styles.upgradeBtnText}>Mejorar</Text>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <AdBanner
+        adUnitID={IS_PRODUCTION ? AD_UNIT_ID : TEST_AD_UNIT_ID}
+        adType={TestAdTypes.Banner}
+        size={{ width: 320, height: 50 }}
+        onAdLoaded={() => {
+          setIsLoaded(true);
+        }}
+        onAdFailedToLoad={() => {
+          setIsVisible(false);
+          setIsLoaded(false);
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
-    borderRadius: 12,
-    padding: 12,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#2a2a3e',
-  },
-  adBadge: {
-    backgroundColor: '#333344',
-    borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    marginRight: 10,
-  },
-  adText: {
-    color: '#888888',
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  adContent: {
-    flex: 1,
-  },
-  adTitle: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  adSubtitle: {
-    color: '#888888',
-    fontSize: 12,
-    marginTop: 2,
-  },
-  upgradeBtn: {
-    backgroundColor: '#4ADE80',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  upgradeBtnText: {
-    color: '#000000',
-    fontSize: 12,
-    fontWeight: '700',
+    justifyContent: 'center',
+    paddingVertical: 4,
+    backgroundColor: '#0a0a0a',
   },
 });
