@@ -2,7 +2,7 @@
   "expo": {
     "name": "Streaming Rotation",
     "slug": "streaming-rotation",
-    "version": "1.2.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -17,7 +17,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.midrocket.streaming-rotation",
       "infoPlist": {
-        "NSUserNotificationsUsageDescription": "Esta app te notifica sobre cancelaciones y reactivaciones de tus servicios de streaming."
+        "NSUserNotificationsUsageDescription": "Esta app te notifica sobre cancelaciones y reactivaciones de tus servicios de streaming.",
+        "GADApplicationIdentifier": "ca-app-pub-3940256099942544~1458002511"
+      },
+      "privacyManifests": {
+        "DSPrivacyManifests": {
+          "DSPrivacyManifestsPath": "./ios/PrivacyInfo.xcprivacy"
+        }
       }
     },
     "android": {
@@ -39,6 +45,8 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "midrocket-rockio",
+    "projectId": "midrocket-streaming-rotation"
   }
 }

@@ -11,8 +11,19 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "medium"
+      }
     },
-    "production": {}
+    "production": {
+      "ios": {
+        "resourceClass": "large",
+        "autoIncrement": true
+      },
+      "android": {
+        "autoIncrement": true
+      }
+    }
   }
 }
