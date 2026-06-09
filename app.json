@@ -2,7 +2,7 @@
   "expo": {
     "name": "Streaming Rotation",
     "slug": "streaming-rotation",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -24,7 +24,8 @@
         "DSPrivacyManifests": {
           "DSPrivacyManifestsPath": "./ios/PrivacyInfo.xcprivacy"
         }
-      }
+      },
+      "buildNumber": "1.2.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +33,9 @@
         "backgroundColor": "#0a0a0a"
       },
       "package": "com.midrocket.streamingrotation",
-      "permissions": ["RECEIVE_BOOT_COMPLETED"]
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED"
+      ]
     },
     "web": {
       "bundler": "metro",
