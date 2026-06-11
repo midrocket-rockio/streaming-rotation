@@ -1,8 +1,10 @@
-// ─── AdMob Banner Component ─────────────────────────────────────
+// ─── AdMob Banner Component — Real AdMob Integration ───
+//
+// Stack: Expo Router + Zustand + MMKV + react-native-google-mobile-ads + EAS Build (iOS-first)
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useAdMob } from '@/services/admobService';
+import { useBannerAd } from '@/services/admobService';
 
 interface AdMobBannerProps {
   size?: 'banner' | 'large';
@@ -10,24 +12,16 @@ interface AdMobBannerProps {
 }
 
 export default function AdMobBanner({ size = 'banner', onPress }: AdMobBannerProps) {
-  const { isLoaded, showInterstitial } = useAdMob();
-  const [showAd, setShowAd] = React.useState(false);
+  const { showAd, isBannerEnabled } = useBannerAd();
 
-  React.useEffect(() => {
-    // Simulate ad loading delay
-    const timer = setTimeout(() => setShowAd(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!showAd) return null;
-
-  const handlePress = () => {
-    if (onPress) onPress();
-    showInterstitial();
-  };
+  if (!showAd || !isBannerEnabled) return null;
 
   return (
-    <TouchableOpacity style={[styles.container, size === 'large' && styles.large]} onPress={handlePress}>
+    <TouchableOpacity
+      style={[styles.container, size === 'large' && styles.large]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       <Text style={styles.adLabel}>AD</Text>
       <Text style={styles.adText}>
         {size === 'large'

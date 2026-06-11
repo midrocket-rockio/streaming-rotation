@@ -14,6 +14,7 @@ import { useSettingsStore } from '@/stores/settingsStore';
 import { useRotationStore } from '@/stores/rotationStore';
 import { useHistoryStore } from '@/stores/historyStore';
 import { formatCurrency } from '@/services/calculatorService';
+import { admobService } from '@/services/admobService';
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$', name: 'Dólar (USD)' },
@@ -289,6 +290,42 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* AdMob / Ads */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Publicidad</Text>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingLeft}>
+              <Text style={styles.settingIcon}>📢</Text>
+              <View>
+                <Text style={styles.settingLabel}>Mostrar anuncios</Text>
+                <Text style={styles.settingValue}>Banner ads, interstitials y rewarded videos</Text>
+              </View>
+            </View>
+            <Switch
+              value={admobService.isAdMobEnabled()}
+              onValueChange={(val) => {
+                admobService.setConfig({ enabled: val });
+              }}
+              trackColor={{ false: '#2a2a3e', true: '#4ADE8044' }}
+              thumbColor={admobService.isAdMobEnabled() ? '#4ADE80' : '#555555'}
+            />
+          </View>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingLeft}>
+              <Text style={styles.settingIcon}>📋</Text>
+              <View>
+                <Text style={styles.settingLabel}>Modo test</Text>
+                <Text style={styles.settingValue}>Usa anuncios de prueba (test mode)</Text>
+              </View>
+            </View>
+            <Text style={[styles.testBadge, { color: admobService.isTestMode() ? '#4ADE80' : '#888' }]}>
+              {admobService.isTestMode() ? 'ACTIVO' : 'INACTIVO'}
+            </Text>
+          </View>
+        </View>
+
         {/* Danger Zone */}
         <View style={styles.dangerSection}>
           <Text style={styles.dangerTitle}>Zona de Peligro</Text>
@@ -477,6 +514,12 @@ const styles = StyleSheet.create({
   },
   dayPillTextActive: {
     color: '#4ADE80',
+  },
+  // AdMob test badge
+  testBadge: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   // Danger zone
   dangerSection: {

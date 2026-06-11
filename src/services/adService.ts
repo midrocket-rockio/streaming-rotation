@@ -1,13 +1,18 @@
+// ─── Ad Service — Rewarded Video Ads ───
+//
+// Stack: Expo Router + Zustand + MMKV + react-native-google-mobile-ads + EAS Build (iOS-first)
+
 import { Platform } from 'react-native';
 import {
   RewardedAd,
-  TestAdTypes,
-} from 'react-native-admob-native-ads';
+  TestIds,
+  AdEventType,
+} from 'react-native-google-mobile-ads';
 
-// Test Ad Unit IDs (Google's test IDs — safe to use in development)
+// Test Ad Unit IDs (Google's official test IDs)
 const REWARDED_AD_UNIT_ID =
   Platform.OS === 'android'
-    ? 'ca-app-pub-3940256099942544/5224354917'
+    ? TestIds.REWARDED
     : 'ca-app-pub-3940256099942544/1712485313';
 
 let rewardedAd: RewardedAd | null = null;
@@ -18,31 +23,37 @@ let isRewardedAdReady = false;
  */
 export async function loadRewardedAd(): Promise<void> {
   try {
-    rewardedAd = new RewardedAd({
+    rewardedAd = RewardedAd.createForAdRequest({
       adUnitID: REWARDED_AD_UNIT_ID,
-      adType: TestAdTypes.Rewarded,
-      onAdLoaded: () => {
-        isRewardedAdReady = true;
-        console.log('[StreamingRotation AdService] Rewarded ad loaded');
-      },
-      onAdFailedToLoad: (error) => {
-        isRewardedAdReady = false;
-        console.warn('[StreamingRotation AdService] Rewarded ad failed to load:', error);
-      },
-      onAdOpened: () => {
-        console.log('[StreamingRotation AdService] Rewarded ad opened');
-      },
-      onAdClosed: () => {
-        console.log('[StreamingRotation AdService] Rewarded ad closed');
-        isRewardedAdReady = false;
-        // Preload next rewarded ad
-        loadRewardedAd();
-      },
-      onUserEarnedReward: () => {
-        console.log('[StreamingRotation AdService] User earned reward');
-        isRewardedAdReady = false;
-      },
+      requestNonPersonalizedAdsOnly: true,
     });
+
+    rewardedAd.addAdEventListener(AdEventType.LOADED, () => {
+      isRewardedAdReady = true;
+      console.log('[StreamingRotation AdService] Rewarded ad loaded');
+    });
+
+    rewardedAd.addAdEventListener(AdEventType.FAILED_TO_LOAD, () => {
+      isRewardedAdReady = false;
+      console.warn('[StreamingRotation AdService] Rewarded ad failed to load');
+    });
+
+    rewardedAd.addAdEventListener(AdEventType.OPENED, () => {
+      console.log('[StreamingRotation AdService] Rewarded ad opened');
+    });
+
+    rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('[StreamingRotation AdService] Rewarded ad closed');
+      isRewardedAdReady = false;
+      // Preload next rewarded ad
+      loadRewardedAd();
+    });
+
+    rewardedAd.addAdEventListener(AdEventType.EARNED_REWARD, () => {
+      console.log('[StreamingRotation AdService] User earned reward');
+      isRewardedAdReady = false;
+    });
+
     await rewardedAd.load();
   } catch (err) {
     console.warn('[StreamingRotation AdService] Failed to load rewarded ad:', err);
