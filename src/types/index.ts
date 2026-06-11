@@ -67,3 +67,6 @@ export interface NotificationState {
   nextServiceId: string | null;
   pendingAlerts: AlertConfig[];
 }
+
+// Re-export streaming types
+export * from './streaming';

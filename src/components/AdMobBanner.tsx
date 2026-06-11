@@ -1,66 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { usePremiumStore } from '@/stores/premiumStore';
-import {
-  AdBanner,
-  TestAdTypes,
-} from 'react-native-admob-native-ads';
+// ─── AdMob Banner Component ─────────────────────────────────────
 
-// Production Ad Unit IDs — replace with your real AdMob IDs
-const AD_UNIT_ID =
-  Platform.OS === 'android'
-    ? 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY'
-    : 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useAdMob } from '@/services/admobService';
 
-// Test Ad Unit IDs (Google's test IDs — safe to use in development)
-const TEST_AD_UNIT_ID =
-  Platform.OS === 'android'
-    ? 'ca-app-pub-3940256099942544/6300978111'
-    : 'ca-app-pub-3940256099942544/2934735716';
+interface AdMobBannerProps {
+  size?: 'banner' | 'large';
+  onPress?: () => void;
+}
 
-// Use test IDs in dev, real IDs in production
-const IS_PRODUCTION = process.env.EXPO_PUBLIC_ADMOB_ENABLED === 'true';
+export default function AdMobBanner({ size = 'banner', onPress }: AdMobBannerProps) {
+  const { isLoaded, showInterstitial } = useAdMob();
+  const [showAd, setShowAd] = React.useState(false);
 
-/**
- * AdMobBanner — Real AdMob banner ad component.
- * Premium users see no ads. Free users see a banner at the bottom.
- */
-export default function AdMobBanner() {
-  const adsEnabled = usePremiumStore((s) => s.adsEnabled);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  React.useEffect(() => {
+    // Simulate ad loading delay
+    const timer = setTimeout(() => setShowAd(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  useEffect(() => {
-    setIsVisible(adsEnabled);
-  }, [adsEnabled]);
+  if (!showAd) return null;
 
-  if (!isVisible) {
-    return null;
-  }
+  const handlePress = () => {
+    if (onPress) onPress();
+    showInterstitial();
+  };
 
   return (
-    <View style={styles.container}>
-      <AdBanner
-        adUnitID={IS_PRODUCTION ? AD_UNIT_ID : TEST_AD_UNIT_ID}
-        adType={TestAdTypes.Banner}
-        size={{ width: 320, height: 50 }}
-        onAdLoaded={() => {
-          setIsLoaded(true);
-        }}
-        onAdFailedToLoad={() => {
-          setIsVisible(false);
-          setIsLoaded(false);
-        }}
-      />
-    </View>
+    <TouchableOpacity style={[styles.container, size === 'large' && styles.large]} onPress={handlePress}>
+      <Text style={styles.adLabel}>AD</Text>
+      <Text style={styles.adText}>
+        {size === 'large'
+          ? 'Upgrade to Premium for an ad-free experience!'
+          : 'Try Premium — No Ads!'}
+      </Text>
+      <View style={styles.ctaButton}>
+        <Text style={styles.ctaText}>Upgrade</Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#1a1a2e',
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#2a2a3e',
+  },
+  large: {
+    padding: 16,
+    marginHorizontal: 16,
+  },
+  adLabel: {
+    fontSize: 10,
+    color: '#666',
+    backgroundColor: '#333',
+    borderRadius: 4,
+    padding: 2,
+    marginRight: 8,
+  },
+  adText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#ccc',
+  },
+  ctaButton: {
+    backgroundColor: '#3B82F6',
+    borderRadius: 6,
     paddingVertical: 4,
-    backgroundColor: '#0a0a0a',
+    paddingHorizontal: 12,
+  },
+  ctaText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#fff',
   },
 });

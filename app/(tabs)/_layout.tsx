@@ -91,6 +91,51 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="recommendations"
+          options={{
+            title: 'Recommend',
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size }}>🎯</Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="calendar"
+          options={{
+            title: 'Calendar',
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size }}>📅</Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="library"
+          options={{
+            title: 'Library',
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size }}>📚</Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="parties"
+          options={{
+            title: 'Parties',
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size }}>🎉</Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="cost-per-show"
+          options={{
+            title: 'Cost/Show',
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size }}>💰</Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="settings"
           options={{
             title: 'Ajustes',
